@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hunter">
+<meta name="theme-color" content="#04050d">
+<title>Hunter System</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--b:#00d4ff;--p:#a855f7}
+body{padding-top:env(safe-area-inset-top);-webkit-tap-highlight-color:transparent;background:#04050d;color:#cfe8ff;font-family:Rajdhani,system-ui,sans-serif;font-size:17px}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(600px 400px at 85% 0,rgba(168,85,247,.22),transparent),radial-gradient(500px 400px at 0 100%,rgba(0,212,255,.15),transparent),linear-gradient(rgba(0,212,255,.05) 1px,transparent 1px) 0 0/40px 40px,linear-gradient(90deg,rgba(0,212,255,.05) 1px,transparent 1px) 0 0/40px 40px}
+.o{font-family:Orbitron,sans-serif}
+.hud{background:linear-gradient(160deg,rgba(10,18,42,.92),rgba(20,8,42,.88));border:1px solid #1e4fa8;border-top:2px solid var(--b);padding:1rem;margin-bottom:1rem;clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);box-shadow:inset 0 0 30px rgba(0,180,255,.1)}
+.hd{font-family:Orbitron;color:var(--b);text-shadow:0 0 8px var(--b);font-size:.95rem;margin-bottom:.7rem}
+.btn{font-family:Orbitron;font-size:.78rem;padding:.65rem 1rem;border:1px solid var(--b);color:var(--b);background:rgba(0,212,255,.08);transition:.2s;cursor:pointer}
+.btn:hover:not(:disabled){background:rgba(0,212,255,.25);box-shadow:0 0 14px var(--b)}
+.btn.p{border-color:var(--p);color:#d8b4fe;background:rgba(168,85,247,.1)}.btn.p:hover:not(:disabled){background:rgba(168,85,247,.3);box-shadow:0 0 14px var(--p)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.sq{width:2rem;height:2rem;padding:0;font-size:1.1rem}
+.inp{background:#070b1c;border:1px solid #2a3b7a;color:#e6f4ff;padding:.45rem .7rem;width:100%}
+.inp:focus,.btn:focus-visible,.nv:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+.bar{height:12px;background:#0a1233;border:1px solid #1e4fa8}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--b),var(--p));box-shadow:0 0 10px var(--p);transition:width .6s}
+.lab{color:#7fa4d8;font-size:.9rem}
+.drop{border:1px dashed #4a6bd0;padding:1.2rem;text-align:center;cursor:pointer;color:#7fa4d8;transition:.2s}
+.drop.on,.drop:hover{border-color:var(--p);background:rgba(168,85,247,.1)}
+.drop img{max-height:160px;margin:.5rem auto 0}
+#toasts{position:fixed;top:calc(.6rem + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:50;width:min(92vw,520px);display:flex;flex-direction:column;gap:.4rem;pointer-events:none}
+.toast{font-family:Orbitron;font-size:.7rem;padding:.7rem .9rem;background:rgba(4,10,30,.95);border:1px solid var(--b);color:var(--b);box-shadow:0 0 16px rgba(0,212,255,.5);animation:in .35s,out .4s 3.2s forwards}
+.toast.r{border-color:#ff4d6d;color:#ff7b92;box-shadow:0 0 16px rgba(255,77,109,.5)}.toast.v{border-color:var(--p);color:#d8b4fe;box-shadow:0 0 16px rgba(168,85,247,.6)}
+@keyframes in{from{transform:translateY(-24px);opacity:0}}@keyframes out{to{opacity:0}}
+#lvl{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(2,3,12,.85);overflow:hidden}
+#lvl.show{display:flex;animation:in .3s}
+#lvl::after{content:"";position:absolute;left:0;right:0;height:3px;background:var(--b);box-shadow:0 0 24px 6px var(--b);animation:scan 1.6s linear infinite}
+@keyframes scan{from{top:-5%}to{top:105%}}
+.pulse{animation:pl 1.4s ease-in-out infinite}@keyframes pl{50%{text-shadow:0 0 30px var(--p),0 0 8px var(--b)}}
+nav{padding-bottom:env(safe-area-inset-bottom);position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(4,6,18,.95);border-top:1px solid #1e4fa8;display:flex}
+.nv{flex:1;padding:.8rem .2rem;font-family:Orbitron;font-size:.62rem;color:#6f8fc4;border-top:2px solid transparent}
+.nv.a{color:var(--b);border-top-color:var(--b);background:rgba(0,212,255,.08);text-shadow:0 0 8px var(--b)}
+.q{display:flex;align-items:center;gap:.8rem;padding:.7rem;border:1px solid #1e3a7a;margin-bottom:.5rem}
+.q.d{border-color:var(--p);opacity:.75}.q.d span{text-decoration:line-through}
+.q input{width:1.3rem;height:1.3rem;accent-color:#a855f7}
+.t{display:none}.t.a{display:block}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head>
+<body>
+<div id="toasts"></div>
+<div id="lvl" onclick="this.classList.remove('show')"><div class="text-center px-4"><div class="o text-sm text-cyan-300">[SYSTEM ALERT]</div><div class="o text-4xl font-black text-purple-300 pulse my-3">LEVEL UP</div><div class="o text-cyan-300" id="lvlTxt"></div><div class="lab mt-3">Tap to continue</div></div></div>
+
+<header class="max-w-3xl mx-auto px-4 pt-4"><div class="o text-xl font-black text-cyan-300" style="text-shadow:0 0 12px #00d4ff">THE SYSTEM</div><div class="lab">Hunter training interface</div></header>
+<main class="max-w-3xl mx-auto p-4 pb-32">
+
+<section id="t1" class="t a">
+ <div class="hud"><div class="flex justify-between items-end"><div><div class="lab">Current rank</div><div class="o text-xl text-purple-300" id="rank"></div></div><div class="text-right"><div class="lab">Level</div><div class="o text-4xl font-black text-cyan-300" id="lv"></div></div></div>
+ <div class="bar mt-3"><i id="xpb" style="width:0"></i></div><div class="lab mt-1" id="xpt"></div></div>
+ <div class="hud"><div class="flex justify-between"><div class="hd">Stat allocation</div><div>Free points: <b class="o text-purple-300" id="pts"></b></div></div>
+  <div id="stats"></div></div>
+ <div class="hud"><div class="hd">Profile summary</div><div class="grid grid-cols-2 gap-2">
+  <div><div class="lab">Height</div><div id="pH"></div></div><div><div class="lab">Weight</div><div id="pW"></div></div>
+  <div class="col-span-2"><div class="lab">Fitness goal</div><div id="pG"></div></div><div class="col-span-2"><div class="lab">Limitations</div><div id="pI"></div></div></div></div>
+<div class="hud"><div class="hd">Backup</div><div class="lab mb-2">Your progress lives only on this device. Copy a backup now and then.</div>
+  <div class="grid grid-cols-2 gap-2"><button class="btn" onclick="exportData()">Export data</button><button class="btn p" onclick="importData()">Import data</button></div></div>
+</section>
+
+<section id="t2" class="t">
+ <div class="hud"><div class="hd">Hunter parameters</div>
+  <div class="grid grid-cols-2 gap-3"><label><span class="lab">Height (cm)</span><input id="h" type="number" class="inp"></label><label><span class="lab">Weight (kg)</span><input id="w" type="number" class="inp"></label></div>
+  <label class="block mt-3"><span class="lab">Fitness goal</span><select id="goal" class="inp"><option>Build muscle</option><option>Lose fat</option><option>Gain strength</option><option>Improve endurance</option></select></label>
+  <label class="block mt-3"><span class="lab">Injury / limitation notes</span><textarea id="inj" rows="2" class="inp" placeholder="e.g. right shoulder injury, avoid heavy overhead pressing"></textarea></label>
+  <button class="btn mt-4 w-full" onclick="gen()">Generate Training Plan from System</button></div>
+ <div class="hud" id="planBox" style="display:none"><div class="hd">Daily training plan</div><div id="plan"></div>
+  <button class="btn p mt-4 w-full" id="wbtn" onclick="finish()">Complete Workout</button></div>
+ <div class="hud"><div class="hd">Physique scan</div>
+  <label class="drop block" id="dz1">Drop a physique or posture photo here, or tap to upload<input type="file" accept="image/*" id="f1" hidden><div id="pv1"></div></label>
+  <div class="lab mt-2">The photo stays in your browser and is not analysed; it is a placeholder for the posture scan.</div></div>
+</section>
+
+<section id="t3" class="t">
+ <div class="hud"><div class="hd">Meal analysis</div>
+  <textarea id="meal" rows="2" class="inp" placeholder="e.g. 2 eggs, oatmeal, 1 banana"></textarea>
+  <label class="drop block mt-3" id="dz2">Or drop a meal photo (simulated scan)<input type="file" accept="image/*" id="f2" hidden><div id="pv2"></div></label>
+  <button class="btn mt-3 w-full" onclick="analyze()">Analyze Meal via System</button><div id="mres" class="mt-3"></div></div>
+ <div class="hud"><div class="hd">Daily intake</div><div class="flex justify-between"><span id="kc" class="o text-cyan-300"></span><span class="lab">Goal 2,500 kcal</span></div>
+  <div class="bar mt-1"><i id="kb" style="width:0"></i></div>
+  <div class="grid grid-cols-3 gap-2 mt-3 text-center"><div><div class="lab">Protein</div><b id="mp"></b></div><div><div class="lab">Carbs</div><b id="mc"></b></div><div><div class="lab">Fats</div><b id="mf"></b></div></div></div>
+ <div class="hud"><div class="hd">Hydration</div><div class="flex justify-between"><span id="wt" class="o text-cyan-300"></span><span class="lab">Goal 2,500 ml</span></div>
+  <div class="bar mt-1"><i id="wb" style="width:0"></i></div><button class="btn p mt-3 w-full" onclick="drink()">+250ml Water</button></div>
+ <div class="hud" style="border-top-color:#a855f7"><div class="hd">System notification</div><div id="next" class="space-y-1"></div></div>
+</section>
+
+<section id="t4" class="t">
+ <div class="hud"><div class="hd">Daily quests</div><div id="ql"></div>
+  <div class="lab mt-2">Clear every quest for a bonus of 100 XP and 2 stat points. Quests reset each day.</div></div>
+</section>
+</main>
+<nav><button class="nv a" data-t="t1">Status</button><button class="nv" data-t="t2">Training</button><button class="nv" data-t="t3">Nutrition</button><button class="nv" data-t="t4">Quests</button></nav>
+
+<script>
+const $=i=>document.getElementById(i),K='hunter.sys.v1',td=()=>new Date().toDateString();
+const DEF={xp:0,lv:1,pts:0,st:{str:10,agi:10,vit:10},h:'',w:'',goal:'Build muscle',inj:'',plan:null,day:'',kcal:0,p:0,c:0,f:0,water:0,meals:0,q:{},wdone:false,bonus:false};
+let S;try{S=Object.assign({},DEF,JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){S=Object.assign({},DEF)}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+function daily(){if(S.day!==td())Object.assign(S,{day:td(),kcal:0,p:0,c:0,f:0,water:0,meals:0,q:{},wdone:false,bonus:false})}
+daily();
+const rk=l=>l<5?'E':l<10?'D':l<15?'C':l<20?'B':l<30?'A':'S',PG=()=>Math.round((+S.w||75)*1.6);
+function toast(m,c=''){const d=document.createElement('div');d.className='toast '+c;d.textContent='[SYSTEM ALERT: '+m+']';$('toasts').append(d);setTimeout(()=>d.remove(),3700)}
+function gain(x){const r0=rk(S.lv);let up=0;S.xp+=x;while(S.xp>=S.lv*100){S.xp-=S.lv*100;S.lv++;S.pts+=2;up++}
+ if(up){$('lvlTxt').textContent='Level '+S.lv+' reached. +'+up*2+' stat points';$('lvl').classList.add('show');setTimeout(()=>$('lvl').classList.remove('show'),3200)}
+ if(rk(S.lv)!==r0)toast('RANK PROMOTION. YOU ARE NOW A '+rk(S.lv)+'-RANK HUNTER','v')}
+const Q=[{id:'water',t:'Drink 2.5L Water',xp:30,ok:()=>S.water>=2500},{id:'wo',t:'Complete Daily Workout',xp:40,ok:()=>S.wdone},{id:'pro',t:()=>'Hit Daily Protein Goal ('+PG()+'g)',xp:30,ok:()=>S.p>=PG()},{id:'meal',t:'Log 3 Meals',xp:20,ok:()=>S.meals>=3}];
+function clear(id){const q=Q.find(x=>x.id===id);if(S.q[id])return;S.q[id]=1;gain(q.xp);toast('QUEST COMPLETED: '+(typeof q.t=='function'?q.t():q.t)+' +'+q.xp+' XP');
+ if(Q.every(x=>S.q[x.id])&&!S.bonus){S.bonus=true;S.pts+=2;gain(100);toast('MINI-QUEST COMPLETED. ALL DAILY QUESTS CLEARED. +100 XP, +2 STAT POINTS','v')}}
+function auto(){Q.forEach(q=>{if(!S.q[q.id]&&q.ok())clear(q.id)})}
+function drink(){S.water+=250;toast('HYDRATION +250ml');auto();save();render()}
+function finish(){if(!S.plan)return toast('NO ACTIVE PLAN. GENERATE ONE FIRST','r');if(S.wdone)return toast('DAILY WORKOUT ALREADY COMPLETED','r');
+ S.wdone=true;S.pts++;gain(50);toast('WORKOUT COMPLETE. +50 XP, +1 STAT POINT');auto();save();render()}
+
+/* Training */
+const EX=[['Goblet Squat',4,'10',.25,['knee']],['Barbell Bench Press',4,'8',.6,['shoulder']],['Romanian Deadlift',3,'10',.4,['back']],['Lat Pulldown',3,'10',.5,['shoulder']],['Walking Lunges',3,'12/leg',.15,['knee','ankle']],['Overhead Press',3,'8',.35,['shoulder']],['Push-ups',3,'15',0,['wrist','shoulder']],['Chest-Supported Row',3,'12',.2,[]],['Hip Thrust',4,'12',.5,[]],['One-Arm Dumbbell Row',3,'12',.2,['back']],['Hamstring Curl',3,'12',.25,[]],['Forearm Plank',3,'45s',0,[]],['Band Pull-Apart',3,'15',0,[]],['Dead Bug',3,'12',0,[]]];
+const SYN={shoulder:['shoulder','rotator','deltoid'],knee:['knee','acl','meniscus'],back:['back','spine','lumbar','disc'],wrist:['wrist','carpal'],ankle:['ankle','achilles']};
+const GM={'Build muscle':{r:'10-12',m:1},'Lose fat':{r:'15',m:.8,c:'20 min incline walk or bike'},'Gain strength':{r:'5',m:1.2,s:1},'Improve endurance':{r:'20',m:.6,c:'25 min steady cardio'}};
+function gen(){const inj=S.inj.toLowerCase(),hit=Object.keys(SYN).filter(k=>SYN[k].some(w=>inj.includes(w))),g=GM[S.goal]||GM['Build muscle'],bw=+S.w||70;
+ const ok=EX.filter(e=>!e[4].some(t=>hit.includes(t))),cut=EX.filter(e=>e[4].some(t=>hit.includes(t))).map(e=>e[0]);
+ const rows=ok.slice(0,6).map(e=>{const w=e[3]?(Math.round(bw*e[3]*g.m/2.5)*2.5)+' kg':'Bodyweight',r=/s$/.test(e[2])?e[2]:g.r==='15'||g.r==='20'||g.r==='5'||/leg/.test(e[2])?(/leg/.test(e[2])?e[2]:g.r):g.r,sets=e[1]+(g.s?1:0);
+  return `<tr class="border-t border-blue-900"><td class="py-2 pr-2">${e[0]}</td><td>${sets}</td><td>${r}</td><td class="text-cyan-300">${w}</td></tr>`}).join('');
+ S.plan=`<div class="lab mb-2">Warm-up: 5 min easy cardio and joint mobility</div><table class="w-full text-left"><tr class="lab"><th>Exercise</th><th>Sets</th><th>Reps</th><th>Weight</th></tr>${rows}</table>`+(g.c?`<div class="mt-2">Finisher: ${g.c}</div>`:'')+(hit.length?`<div class="mt-3 text-purple-300">Adapted for ${hit.join(', ')}. Removed: ${cut.join(', ')||'none'}.</div>`:'')+`<div class="lab mt-3">Weights are estimates from your bodyweight. Start lighter and stop if anything hurts. This is not medical advice; check with a professional about injuries.</div>`;
+ toast('TRAINING PLAN GENERATED','v');save();render()}
+
+/* Nutrition */
+const F={egg:[70,6,.5,5],chicken:[280,50,0,6],rice:[240,4.5,53,.5],oat:[300,10,54,5],banana:[105,1.3,27,.4],bread:[80,3,15,1],steak:[420,48,0,25],salmon:[360,34,0,23],pasta:[350,12,70,2],pizza:[285,12,36,10],burger:[550,28,40,30],salad:[150,4,12,9],yogurt:[150,15,10,4],milk:[120,8,12,5],apple:[95,.5,25,.3],potato:[160,4,37,.2],cheese:[110,7,.5,9],avocado:[240,3,12,22],shake:[200,30,8,3],beans:[220,14,40,1],tuna:[130,29,0,1],fries:[365,4,48,17]};
+const SM=[['Grilled chicken, rice and vegetables',[620,48,65,18]],['Oatmeal with banana and nuts',[450,14,70,12]],['Burger and fries',[900,32,90,45]],['Salmon, potato and salad',[680,40,50,28]]];
+let mf=null;
+function analyze(){const t=$('meal').value.toLowerCase().trim();let n,m=[0,0,0,0],note='';
+ if(t){const hits=Object.keys(F).filter(k=>t.includes(k));hits.forEach(k=>{const r=t.match(new RegExp('(\\d+(?:\\.\\d+)?)\\s*(?:x\\s*)?(?:[a-z]+\\s)?'+k));let q=r?+r[1]:1;if(q>20)q=q/150;F[k].forEach((v,i)=>m[i]+=v*q)});
+  if(!hits.length){m=[450,25,50,15];note=' (unrecognised foods, rough estimate)'}n=t}
+ else if(mf){const s=SM[mf.size%SM.length];n=s[0];m=s[1].slice();note=' (simulated photo scan)'}
+ else return toast('DESCRIBE OR UPLOAD A MEAL FIRST','r');
+ m=m.map(Math.round);S.kcal+=m[0];S.p+=m[1];S.c+=m[2];S.f+=m[3];S.meals++;
+ $('mres').innerHTML=`<div class="text-purple-300 mb-1">Analysis${note}</div><div class="grid grid-cols-4 gap-2 text-center"><div><div class="lab">Calories</div><b>${m[0]}</b></div><div><div class="lab">Protein</div><b>${m[1]}g</b></div><div><div class="lab">Carbs</div><b>${m[2]}g</b></div><div><div class="lab">Fats</div><b>${m[3]}g</b></div></div>`;
+ toast('MEAL LOGGED. +'+m[0]+' KCAL');$('meal').value='';mf=null;$('pv2').innerHTML='';auto();save();render()}
+function nextEv(list){const d=new Date(),n=d.getHours()*60+d.getMinutes();let b=list.map(x=>[x[0]*60+(x[1]||0),x[2]]).map(x=>[x[0]>n?x[0]:x[0]+1440,x[1]]).sort((a,b)=>a[0]-b[0])[0],df=b[0]-n,t=b[0]%1440;
+ return `${b[1]} at ${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')} (in ${Math.floor(df/60)}h ${df%60}m)`}
+function sched(){$('next').innerHTML=`<div>Next meal: ${nextEv([[8,0,'Breakfast'],[12,30,'Lunch'],[16,0,'Snack'],[19,30,'Dinner']])}</div><div>Next hydration: ${nextEv([8,10,12,14,16,18,20].map(h=>[h,0,'Drink 250ml']))}</div>`}
+
+/* Render */
+function render(){const g=(i,v)=>$(i).textContent=v;
+ g('rank',rk(S.lv)+'-Rank Hunter');g('lv',S.lv);g('pts',S.pts);g('xpt',S.xp+' / '+S.lv*100+' XP');$('xpb').style.width=S.xp/(S.lv*100)*100+'%';
+ $('stats').innerHTML=[['str','Strength (STR)'],['agi','Agility (AGI)'],['vit','Vitality / Willpower (VIT)']].map(s=>`<div class="flex items-center justify-between py-2 border-t border-blue-900"><span>${s[1]}</span><span class="flex items-center gap-3"><b class="o text-cyan-300">${S.st[s[0]]}</b><button class="btn sq" ${S.pts?'':'disabled'} onclick="alloc('${s[0]}')" aria-label="Add point to ${s[1]}">+</button></span></div>`).join('');
+ g('pH',S.h?S.h+' cm':'Not set');g('pW',S.w?S.w+' kg':'Not set');g('pG',S.goal);g('pI',S.inj||'None recorded');
+ $('planBox').style.display=S.plan?'block':'none';if(S.plan)$('plan').innerHTML=S.plan;$('wbtn').disabled=S.wdone;$('wbtn').textContent=S.wdone?'Workout completed today':'Complete Workout';
+ g('kc',S.kcal+' kcal');$('kb').style.width=Math.min(100,S.kcal/25)+'%';g('mp',S.p+'g');g('mc',S.c+'g');g('mf',S.f+'g');
+ g('wt',S.water+' ml');$('wb').style.width=Math.min(100,S.water/25)+'%';sched();
+ $('ql').innerHTML=Q.map(q=>`<label class="q ${S.q[q.id]?'d':''}"><input type="checkbox" ${S.q[q.id]?'checked disabled':''} onchange="clear('${q.id}');save();render()"><span class="flex-1">${typeof q.t=='function'?q.t():q.t}</span><b class="o text-xs text-purple-300">+${q.xp} XP</b></label>`).join('')}
+function alloc(k){if(S.pts<1)return;S.pts--;S.st[k]++;toast(k.toUpperCase()+' INCREASED TO '+S.st[k]);save();render()}
+
+/* Wiring */
+document.querySelectorAll('.nv').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nv,.t').forEach(e=>e.classList.remove('a'));b.classList.add('a');$(b.dataset.t).classList.add('a')});
+['h','w','goal','inj'].forEach(i=>{$(i).value=S[i];$(i).oninput=()=>{S[i]=$(i).value;save();render()}});
+function drop(z,f,p,cb){const d=$(z),i=$(f),h=file=>{if(!file||!file.type.startsWith('image/'))return toast('IMAGE FILES ONLY','r');cb(file);const im=new Image();im.src=URL.createObjectURL(file);$(p).replaceChildren(im);toast('IMAGE RECEIVED')};
+ i.onchange=()=>h(i.files[0]);['dragover','dragenter'].forEach(e=>d.addEventListener(e,x=>{x.preventDefault();d.classList.add('on')}));['dragleave','drop'].forEach(e=>d.addEventListener(e,()=>d.classList.remove('on')));d.addEventListener('drop',x=>{x.preventDefault();h(x.dataTransfer.files[0])})}
+drop('dz1','f1','pv1',()=>{});drop('dz2','f2','pv2',f=>mf=f);
+auto();save();render();setInterval(sched,30000);
+
+function exportData(){const t=JSON.stringify(S);(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('BACKUP COPIED TO CLIPBOARD. PASTE IT INTO NOTES'),()=>prompt('Copy this backup text:',t))}
+function importData(){const t=prompt('Paste your backup text:');if(!t)return;try{const d=JSON.parse(t);if(typeof d.lv!=='number')throw 0;S=Object.assign({},DEF,d);daily();save();['h','w','goal','inj'].forEach(i=>$(i).value=S[i]);render();toast('BACKUP RESTORED','v')}catch(e){toast('INVALID BACKUP DATA','r')}}
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script></body></html>
